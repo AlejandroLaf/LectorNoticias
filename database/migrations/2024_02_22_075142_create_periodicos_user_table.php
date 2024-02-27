@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Periodico;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +16,9 @@ return new class extends Migration
         Schema::create('periodicos_user', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+
+            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Periodico::class);
         });
     }
 
