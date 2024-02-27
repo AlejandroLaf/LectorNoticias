@@ -11,6 +11,12 @@
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}
                 </div>
+                <div class="p-6 text-gray-900">
+                    <a href="{{ route('listaPeriodicos') }}">Ver periodicos</a>
+                </div>
+                <div class="p-6 text-gray-900">
+                    <a href="{{ route('mostrar-formulario-agregar') }}">Agregar Periódico</a>
+                </div>
             </div>
         </div>
     </div>
