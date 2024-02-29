@@ -8,8 +8,9 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-center">
-            <a href="{{ url('/periodicos/agregar') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                Añadir periodico
+            <a href="{{ url('/periodicos/agregar') }}"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                Añadir periódico
             </a>
         </div>
     </div>
@@ -28,12 +29,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             @auth
-            console.log('Token:', '{{ Auth::user()->api_token }}');
+            console.log('Usuario autenticado');
+            console.log('User ID:', '{{ Auth::id() }}');
 
-            fetch('http://localhost/api/periodicos', {
+            fetch('http://localhost:8000/api/periodicos', {
                     method: 'GET',
+                    credentials: 'include', // Asegura que las cookies se incluyan en la solicitud
                     headers: {
-                        'Authorization': 'Bearer {{ Auth::user()->api_token }}',
                         'Accept': 'application/json',
                     },
                 })
@@ -42,14 +44,39 @@
                     const periodicosList = document.getElementById('periodicos-list');
                     const periodicosMessage = document.getElementById('periodicos-message');
 
-                    if (data && data.periodicos && data.periodicos.length > 0) {
+                    if (data && data.nombres_periodicos && data.nombres_periodicos.length > 0) {
                         periodicosMessage.style.display = 'none';
                         periodicosList.style.display = 'block';
 
                         // Iterar sobre los periódicos y agregar elementos a la lista
-                        data.periodicos.forEach(periodico => {
+                        data.nombres_periodicos.forEach(periodicoName => {
                             const li = document.createElement('li');
-                            li.textContent = periodico.name;
+
+                            // Estructura similar a lo que proporcionaste
+                            li.innerHTML = `
+                    <div class="py-6">
+                        <div class="flex justify-center font-bold mb-6">
+                            ${periodicoName}
+                        </div>
+                        <div class="py-2">
+                            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-around">
+                                <button class="bg-purple-500 hover:bg-purpleyellow-700 text-white font-bold py-2 px-4 rounded-full">
+                                    Titulares
+                                </button>
+                                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
+                                    Ver datos
+                                </button>
+                                <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full">
+                                    Editar
+                                </button>
+                                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
+                                    Borrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
                             periodicosList.appendChild(li);
                         });
                     } else {
@@ -64,7 +91,6 @@
         @else
             window.location.href = '/';
         @endauth
-
         });
     </script>
 </x-app-layout>

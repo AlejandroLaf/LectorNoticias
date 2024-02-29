@@ -7,23 +7,22 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Goutte\Client;
 
 class PeriodicoController extends Controller
 {
     public function verNombresPeriodicos(Request $request)
-    {
-        // Obtener el usuario autenticado
-        $user = $request->user();
+{
+    // Verificar si el usuario está autenticado mediante sesiones
+    if (Auth::check()) {
+        $userId = Auth::id();
+        Log::info('ID del usuario: ' . $userId); // Agrega esta línea para el log
 
-        // Verificar si el usuario está autenticado
-        if (!$user) {
-            return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
-        }
+        // Obtener los periódicos del usuario autenticado
+        $periodicos = Auth::user()->periodicos;
 
-        // Obtener los periódicos del usuario
-        $periodicos = $user->periodicos;
 
         // Verificar si hay periódicos
         if ($periodicos->isEmpty()) {
@@ -33,9 +32,16 @@ class PeriodicoController extends Controller
         // Obtener solo los nombres de los periódicos
         $nombresPeriodicos = $periodicos->pluck('name');
 
+        Log::info('Periodicos: ' . $nombresPeriodicos); // Agrega esta línea para el log
+
         // Devolver los nombres en formato JSON
         return response()->json(['nombres_periodicos' => $nombresPeriodicos]);
     }
+
+    // Si el usuario no está autenticado, devolver una respuesta no autorizada
+    return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+}
+
 
     public function agregarPeriodico(Request $request)
     {

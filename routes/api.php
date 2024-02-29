@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['auth','cors'])->group(function () {
+Route::middleware(['api','web','auth'])->group(function () {
     // Rutas de la API
     Route::get('/periodicos', [PeriodicoController::class, 'verNombresPeriodicos'])->name('api.verPeriodicos');
     Route::post('/periodicos/agregar', [PeriodicoController::class,'agregarPeriodico'])->name('api.agregarPeriodico');
