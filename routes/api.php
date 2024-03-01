@@ -25,7 +25,7 @@ Route::middleware(['api','web','auth'])->group(function () {
     Route::post('/periodicos/agregar', [PeriodicoController::class,'agregarPeriodico'])->name('api.agregarPeriodico');
     Route::get('/periodicos/{id}', [PeriodicoController::class, 'mostrarDatosPorPeriodico']);
     Route::delete('/periodicos/{id}', [PeriodicoController::class, 'borrarPeriodico']);
-    Route::put('/periodicos/{id}', [PeriodicoController::class, 'modificarPeriodico']);
+    Route::put('/periodicos/editar/{id}', [PeriodicoController::class, 'editarPeriodico']);
     Route::get('/ver-titulares', [PeriodicoController::class, 'mostrarTitulares']);
     Route::get('/ver-titulares/{id}', [PeriodicoController::class, 'mostrarTitularesPorPeriodico']);
 });

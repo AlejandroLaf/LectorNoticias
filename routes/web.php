@@ -28,8 +28,10 @@ Route::middleware(['auth','web'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/periodicos', [PeriodicoWebController::class, 'verNombresPeriodicos'])->name('listaPeriodicos');
-    Route::get('/periodicos/agregar', [PeriodicoWebController::class, 'agregarPeriodico']);
+    Route::get('/periodicos', [PeriodicoWebController::class, 'verNombresPeriodicos', 'index'])->name('periodicos.index');
+    Route::get('/periodicos/nuevo', [PeriodicoWebController::class, 'mostrarFormularioAgregar']);
+    Route::get('/periodicos/{id}', [PeriodicoWebController::class, 'mostrarDatosPorPeriodico']);
+    Route::get('/periodicos/editar/{id}', [PeriodicoWebController::class, 'editarPeriodico']);
 });
 
 require __DIR__ . '/auth.php';

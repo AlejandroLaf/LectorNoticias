@@ -9,6 +9,12 @@ class Periodico extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'url',
+        'name',
+        // Agrega otros atributos aquí si los tienes
+    ];
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'periodicos_user');

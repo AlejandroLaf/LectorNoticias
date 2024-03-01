@@ -17,7 +17,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('agregar-periodico') }}" method="post">
+                    <form id="agregarPeriodicoForm" action="" method="post">
                         @csrf
                         <div class="mb-4">
                             <label for="url" class="block text-gray-700 text-sm font-bold mb-2">URL:</label>
@@ -28,7 +28,7 @@
                             <input type="text" name="name" id="name" class="border-2 border-gray-300 p-2 w-full" required>
                         </div>
                         <div>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                            <button type="button" onclick="agregarPeriodico()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
                                 Agregar Periódico
                             </button>
                         </div>
@@ -37,4 +37,31 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function agregarPeriodico() {
+            // Obtener los datos del formulario
+            var formData = new FormData(document.getElementById('agregarPeriodicoForm'));
+
+            // Realizar la petición AJAX
+            fetch('http://localhost:8000/api/periodicos/agregar', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include', // Asegura que las cookies se incluyan en la solicitud
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}', // Agregar el token CSRF
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Manejar la respuesta aquí (puede ser mostrar un mensaje de éxito, etc.)
+                console.log(data);
+            })
+            .catch(error => {
+                // Manejar errores aquí
+                console.error('Error en la solicitud:', error);
+            });
+        }
+    </script>
 </x-app-layout>
