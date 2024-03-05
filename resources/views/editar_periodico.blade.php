@@ -17,10 +17,9 @@
                         </div>
                     @endif
 
-                    <form id="editarPeriodicoForm" action="" method="put">
+                    <form id="editarPeriodicoForm" action="#" method="post">
                         @csrf
                         @method('PUT')
-                        <!-- Método para Laravel que indica que esta es una solicitud de actualización -->
 
                         <div class="mb-4">
                             <label for="url" class="block text-gray-700 text-sm font-bold mb-2">URL:</label>
@@ -46,9 +45,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Obtener los datos del formulario
-            var formData = new FormData(document.getElementById('editarPeriodicoForm'));
-
             // Obtener el ID del periódico de la URL
             const pathArray = window.location.pathname.split('/');
             const id = pathArray[pathArray.length - 1];
@@ -57,14 +53,17 @@
             document.getElementById('editarPeriodicoForm').addEventListener('submit', function(event) {
                 event.preventDefault();
 
-                // Actualizar la URL de la solicitud con el ID del periódico
+                // Obtener los datos del formulario
+                var formData = new FormData(document.getElementById('editarPeriodicoForm'));
+
+                // Realizar la petición AJAX incluyendo el ID del periódico
                 fetch(`http://localhost:8000/api/periodicos/editar/${id}`, {
                         method: 'PUT',
                         body: formData,
-                        credentials: 'include', // Asegura que las cookies se incluyan en la solicitud
+                        credentials: 'include',
                         headers: {
                             'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}', // Agregar el token CSRF
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         },
                     })
                     .then(response => response.json())

@@ -189,52 +189,66 @@ class PeriodicoController extends Controller
     }
 
     public function borrarPeriodico(Request $request, $id)
-    {
-        $user = $request->user();
+{
+    try {
+        // Verificar si el usuario está autenticado mediante sesiones
+        if (Auth::check()) {
+            $user = $request->user();
 
-        // Obtener el periódico específico por ID
-        $periodico = $user->periodicos()->findOrFail($id);
+            // Obtener el periódico específico por ID y asociado al usuario
+            $periodico = $user->periodicos()->findOrFail($id);
 
-        // Borrar el periódico
-        $periodico->delete();
+            // Borrar el periódico
+            $periodico->delete();
 
-        // Devolver la respuesta en formato JSON
-        return response()->json(['mensaje' => 'Periódico borrado correctamente']);
-    }
-    public function editarPeriodico(Request $request, $id)
-    {
-        try {
-            // Verificar si el usuario está autenticado mediante sesiones
-            if (Auth::check()) {
-                $user = $request->user();
-
-                // Obtener el periódico específico por ID y asociado al usuario
-                $periodico = $user->periodicos()->findOrFail($id);
-
-                // Validar los datos de la solicitud
-                $request->validate([
-                    'url' => 'required|url',
-                    'name' => 'required|string',
-                ]);
-
-                // Actualizar los datos del periódico
-                $periodico->update([
-                    'url' => $request->input('url'),
-                    'name' => $request->input('name'),
-                ]);
-
-                // Devolver la respuesta en formato JSON
-                return response()->json(['mensaje' => 'Periódico modificado correctamente']);
-            } else {
-                // Si el usuario no está autenticado, devolver una respuesta no autorizada
-                return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
-            }
-        } catch (\Exception $e) {
-            // Manejar errores
-            Log::error('Error al editar el periódico: ' . $e->getMessage());
-            Log::error($e->getTraceAsString()); // Agregar información de seguimiento
-
-            return response()->json(['error' => 'Error al editar el periódico'], 500);
+            // Devolver la respuesta en formato JSON
+            return response()->json(['mensaje' => 'Periódico borrado correctamente']);
+        } else {
+            // Si el usuario no está autenticado, devolver una respuesta no autorizada
+            return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
         }
+    } catch (\Exception $e) {
+        // Manejar errores
+        Log::error('Error al borrar el periódico: ' . $e->getMessage());
+        Log::error($e->getTraceAsString()); // Agregar información de seguimiento
+
+        return response()->json(['error' => 'Error al borrar el periódico'], 500);
     }
+}
+    public function editarPeriodico(Request $request, $id)
+{
+    try {
+        // Verificar si el usuario está autenticado mediante sesiones
+        if (Auth::check()) {
+            $user = $request->user();
+
+            // Obtener el periódico específico por ID y asociado al usuario
+            $periodico = $user->periodicos()->findOrFail($id);
+
+            // Validar los datos de la solicitud
+            $request->validate([
+                'url' => 'required|url',
+                'name' => 'required|string',
+            ]);
+
+            // Actualizar los datos del periódico
+            $periodico->update([
+                'url' => $request->input('url'),
+                'name' => $request->input('name'),
+            ]);
+
+            // Devolver la respuesta en formato JSON
+            return response()->json(['mensaje' => 'Periódico modificado correctamente']);
+        } else {
+            // Si el usuario no está autenticado, devolver una respuesta no autorizada
+            return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+        }
+    } catch (\Exception $e) {
+        // Manejar errores
+        Log::error('Error al editar el periódico: ' . $e->getMessage());
+        Log::error($e->getTraceAsString()); // Agregar información de seguimiento
+
+        return response()->json(['error' => 'Error al editar el periódico'], 500);
+    }
+}
 }
