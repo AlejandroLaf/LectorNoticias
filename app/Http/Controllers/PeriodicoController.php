@@ -93,58 +93,86 @@ class PeriodicoController extends Controller
 
     public function mostrarTitulares(Request $request)
     {
-        $user = $request->user();
+        try {
+            // Verificar si el usuario está autenticado mediante sesiones
+            if (Auth::check()) {
+                $user = $request->user();
 
-        // Obtener los periódicos del usuario
-        $periodicos = $user->periodicos;
+                // Obtener los periódicos del usuario
+                $periodicos = $user->periodicos;
 
-        // Recopilar los titulares de todos los periódicos
-        $titulares = [];
+                // Recopilar los titulares de todos los periódicos
+                $titulares = [];
 
-        foreach ($periodicos as $periodico) {
-            $url = $periodico->url;
+                foreach ($periodicos as $periodico) {
+                    $url = $periodico->url;
 
-            // Utilizar Goutte para hacer scraping de los titulares
-            $client = new Client();
-            $crawler = $client->request('GET', $url);
+                    // Utilizar Goutte para hacer scraping de los titulares
+                    $client = new Client();
+                    $crawler = $client->request('GET', $url);
 
-            // Ejemplo: Obtener titulares dentro de elementos con la clase 'titular'
-            $titularesEnPagina = $crawler->filter('h2')->each(function ($node) {
-                return $node->text();
-            });
+                    // Ejemplo: Obtener titulares dentro de elementos con la clase 'titular'
+                    $titularesEnPagina = $crawler->filter('h2')->each(function ($node) {
+                        return $node->text();
+                    });
 
-            // Almacenar los titulares en el array
-            $titulares[] = [
-                'periodico' => $periodico->name,
-                'titulares' => $titularesEnPagina,
-            ];
+                    // Almacenar los titulares en el array
+                    $titulares[] = [
+                        'periodico' => $periodico->name,
+                        'titulares' => $titularesEnPagina,
+                    ];
+                }
+
+                // Devolver los titulares en formato JSON
+                return response()->json(['titulares' => $titulares]);
+            } else {
+                // Si el usuario no está autenticado, devolver una respuesta no autorizada
+                return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+            }
+        } catch (\Exception $e) {
+            // Manejar errores
+            Log::error('Error al obtener titulares: ' . $e->getMessage());
+            Log::error($e->getTraceAsString()); // Agregar información de seguimiento
+
+            return response()->json(['error' => 'Error al obtener titulares'], 500);
         }
-
-        // Devolver los titulares en formato JSON
-        return response()->json(['titulares' => $titulares]);
     }
 
     public function mostrarTitularesPorPeriodico(Request $request, $id)
     {
-        $user = $request->user();
+        try {
+            // Verificar si el usuario está autenticado mediante sesiones
+            if (Auth::check()) {
+                $user = $request->user();
 
-        // Obtener el periódico específico por ID
-        $periodico = $user->periodicos()->findOrFail($id);
+                // Obtener el periódico específico por ID y asociado al usuario
+                $periodico = $user->periodicos()->findOrFail($id);
 
-        // Utilizar Goutte para hacer scraping de los titulares
-        $client = new Client();
-        $crawler = $client->request('GET', $periodico->url);
+                // Utilizar Goutte para hacer scraping de los titulares
+                $client = new Client();
+                $crawler = $client->request('GET', $periodico->url);
 
-        // Ejemplo: Obtener titulares dentro de elementos <h2>
-        $titularesEnPagina = $crawler->filter('h2')->each(function ($node) {
-            return $node->text();
-        });
+                // Ejemplo: Obtener titulares dentro de elementos <h2>
+                $titularesEnPagina = $crawler->filter('h2')->each(function ($node) {
+                    return $node->text();
+                });
 
-        // Devolver los titulares en formato JSON
-        return response()->json([
-            'periodico' => $periodico->name,
-            'titulares' => $titularesEnPagina,
-        ]);
+                // Devolver los titulares en formato JSON
+                return response()->json([
+                    'periodico' => $periodico->name,
+                    'titulares' => $titularesEnPagina,
+                ]);
+            } else {
+                // Si el usuario no está autenticado, devolver una respuesta no autorizada
+                return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+            }
+        } catch (\Exception $e) {
+            // Manejar errores
+            Log::error('Error al obtener titulares del periódico: ' . $e->getMessage());
+            Log::error($e->getTraceAsString()); // Agregar información de seguimiento
+
+            return response()->json(['error' => 'Error al obtener titulares del periódico'], 500);
+        }
     }
 
     public function mostrarDatosPorPeriodico(Request $request, $id)
@@ -189,66 +217,66 @@ class PeriodicoController extends Controller
     }
 
     public function borrarPeriodico(Request $request, $id)
-{
-    try {
-        // Verificar si el usuario está autenticado mediante sesiones
-        if (Auth::check()) {
-            $user = $request->user();
+    {
+        try {
+            // Verificar si el usuario está autenticado mediante sesiones
+            if (Auth::check()) {
+                $user = $request->user();
 
-            // Obtener el periódico específico por ID y asociado al usuario
-            $periodico = $user->periodicos()->findOrFail($id);
+                // Obtener el periódico específico por ID y asociado al usuario
+                $periodico = $user->periodicos()->findOrFail($id);
 
-            // Borrar el periódico
-            $periodico->delete();
+                // Borrar el periódico
+                $periodico->delete();
 
-            // Devolver la respuesta en formato JSON
-            return response()->json(['mensaje' => 'Periódico borrado correctamente']);
-        } else {
-            // Si el usuario no está autenticado, devolver una respuesta no autorizada
-            return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+                // Devolver la respuesta en formato JSON
+                return response()->json(['mensaje' => 'Periódico borrado correctamente']);
+            } else {
+                // Si el usuario no está autenticado, devolver una respuesta no autorizada
+                return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+            }
+        } catch (\Exception $e) {
+            // Manejar errores
+            Log::error('Error al borrar el periódico: ' . $e->getMessage());
+            Log::error($e->getTraceAsString()); // Agregar información de seguimiento
+
+            return response()->json(['error' => 'Error al borrar el periódico'], 500);
         }
-    } catch (\Exception $e) {
-        // Manejar errores
-        Log::error('Error al borrar el periódico: ' . $e->getMessage());
-        Log::error($e->getTraceAsString()); // Agregar información de seguimiento
-
-        return response()->json(['error' => 'Error al borrar el periódico'], 500);
     }
-}
     public function editarPeriodico(Request $request, $id)
-{
-    try {
-        // Verificar si el usuario está autenticado mediante sesiones
-        if (Auth::check()) {
-            $user = $request->user();
+    {
+        try {
+            // Verificar si el usuario está autenticado mediante sesiones
+            if (Auth::check()) {
+                $user = $request->user();
 
-            // Obtener el periódico específico por ID y asociado al usuario
-            $periodico = $user->periodicos()->findOrFail($id);
+                // Obtener el periódico específico por ID y asociado al usuario
+                $periodico = $user->periodicos()->findOrFail($id);
 
-            // Validar los datos de la solicitud
-            $request->validate([
-                'url' => 'required|url',
-                'name' => 'required|string',
-            ]);
+                // Validar los datos de la solicitud
+                $request->validate([
+                    'url' => 'required|url',
+                    'name' => 'required|string',
+                ]);
 
-            // Actualizar los datos del periódico
-            $periodico->update([
-                'url' => $request->input('url'),
-                'name' => $request->input('name'),
-            ]);
+                // Actualizar los datos del periódico
+                $periodico->update([
+                    'url' => $request->input('url'),
+                    'name' => $request->input('name'),
+                ]);
 
-            // Devolver la respuesta en formato JSON
-            return response()->json(['mensaje' => 'Periódico modificado correctamente']);
-        } else {
-            // Si el usuario no está autenticado, devolver una respuesta no autorizada
-            return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+                // Devolver la respuesta en formato JSON
+                return response()->json(['mensaje' => 'Periódico modificado correctamente']);
+            } else {
+                // Si el usuario no está autenticado, devolver una respuesta no autorizada
+                return response()->json(['mensaje' => 'Usuario no autenticado'], 401);
+            }
+        } catch (\Exception $e) {
+            // Manejar errores
+            Log::error('Error al editar el periódico: ' . $e->getMessage());
+            Log::error($e->getTraceAsString()); // Agregar información de seguimiento
+
+            return response()->json(['error' => 'Error al editar el periódico'], 500);
         }
-    } catch (\Exception $e) {
-        // Manejar errores
-        Log::error('Error al editar el periódico: ' . $e->getMessage());
-        Log::error($e->getTraceAsString()); // Agregar información de seguimiento
-
-        return response()->json(['error' => 'Error al editar el periódico'], 500);
     }
-}
 }

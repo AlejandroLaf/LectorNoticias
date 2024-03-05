@@ -60,9 +60,11 @@
                                 </div>
                                 <div class="py-2">
                                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-around">
+                                        <a href="/ver-titulares/${periodico.id}">
                                         <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full">
                                             Titulares
                                         </button>
+                                        </a>
                                         <a href="/periodicos/${periodico.id}">
                                             <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
                                                 Ver datos

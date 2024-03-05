@@ -32,6 +32,8 @@ Route::middleware(['auth','web'])->group(function () {
     Route::get('/periodicos/nuevo', [PeriodicoWebController::class, 'mostrarFormularioAgregar']);
     Route::get('/periodicos/{id}', [PeriodicoWebController::class, 'mostrarDatosPorPeriodico']);
     Route::get('/periodicos/editar/{id}', [PeriodicoWebController::class, 'editarPeriodico']);
+    Route::get('/ver-titulares/{id}', [PeriodicoWebController::class, 'verTitularesPeriodico'])->name('titulares.periodico');
+    Route::get('/ver-titulares', [PeriodicoWebController::class, 'verTitulares'])->name('titulares.titulares');
 });
 
 require __DIR__ . '/auth.php';

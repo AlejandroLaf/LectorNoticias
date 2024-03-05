@@ -17,6 +17,12 @@ class PeriodicoWebController extends Controller
 
     }
 
+    public function verTitulares()
+    {
+                return view('titulares');
+
+    }
+
     public function mostrarFormularioAgregar()
     {
         return view('agregar_periodico');
@@ -30,5 +36,10 @@ class PeriodicoWebController extends Controller
     public function editarPeriodico(Request $request, $id)
     {
         return view('editar_periodico');
+    }
+
+    public function verTitularesPeriodico(Request $request, $id)
+    {
+        return view('titulares_periodico');
     }
 }

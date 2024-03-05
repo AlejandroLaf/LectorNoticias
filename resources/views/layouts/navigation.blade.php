@@ -19,6 +19,10 @@
                     <x-nav-link :href="route('periodicos.index')" :active="request()->routeIs('periodicos.index')">
                         {{ __('Periodicos') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('titulares.titulares')" :active="request()->routeIs('titulares.titulares')">
+                        {{ __('Titulares') }}
+                    </x-nav-link>
                 </div>
             </div>
 
